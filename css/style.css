@@ -8,6 +8,11 @@ html {
 	timeline-scope: --section, --main, --site-header;
 }
 
+::-webkit-scrollbar {
+	width: 0;
+	background: transparent;
+}
+
 /* We'll want to match these colors for the best melty effect */
 /* But play around with them (and add a color to section) to see happens */
 body,
