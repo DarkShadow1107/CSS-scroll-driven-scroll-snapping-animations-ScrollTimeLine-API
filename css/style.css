@@ -1,5 +1,809 @@
 @layer base, rhythm, layout, components, default, overwrites;
 
+@layer base {
+  :root {
+    /*
+    * Fonts and text
+    */
+    --font-family-default: 'Noto Sans Display', Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+    --font-family-heading: 'Fraunces', Didot, 'Bodoni MT', 'Noto Serif Display', 'URW Palladio L', P052, Sylfaen, serif;
+    --font-family-monospace: 'Nimbus Mono PS', 'Courier New', monospace;
+
+    --max-content-width: 100rem;
+    --max-reading-measure: 50ch;
+    --min-tap-size: 48px;
+    --min-tap-space: 8px;
+
+    /*
+    * Colors
+    */
+    --color-background: #000;
+    --color-text: #fff0f4;
+    --color-primary: oklch(74% 0.15 32);
+    --color-secondary: oklch(65% 0.13 210);
+    --color-ui: oklch(65% 0.05 210);
+
+    --color-yellow: oklch(80% 0.16 85);
+    --color-green: oklch(60% 0.16 135);
+    --color-red: oklch(65% 0.18 15);
+    --color-green-2: oklch(54% 0.11 164);
+    --color-purple: oklch(62% 0.15 318);
+    --color-red-2: oklch(57% 0.2 15);
+
+    --color-link: var(--color-primary);
+    --color-link-hover: var(--color-secondary);
+  }
+}
+
+@layer rhythm {
+  body {
+    --font-size-min: 16;
+    --font-size-max: 20;
+
+    --line-height-min: 1.2;
+    --line-height-max: 1.6;
+
+    --font-size-default: var(--font-size);
+    --line-height-default: var(--line-height);
+
+    /*
+    * Spacing / rhythm
+    */
+    --spacing: var(--RHYTHM);
+
+    /* 
+      Useful heading scales
+      Golden Ratio: 1.618
+      Minor Sixth: 1.6
+      Perfect Fifth: 1.5
+      Augmented Fourth: 1.414
+      Perfect Fourth: 1.333
+      Major Third: 1.25
+      Minor Third: 1.2
+      Major Second: 1.125
+      Minor Second: 1.067
+
+      Once CSS pow() is supported, we can use the following formula to create a scale:
+      --min-font-size: pow(var(--base-font-size-min) * var(--min-heading-scale)), var(--heading-level));
+      --max-font-size: pow(var(--base-font-size-max) * var(--max-heading-scale)), var(--heading-level));
+    */
+
+    --pl: 1.125;
+    --pu: 1.6;
+
+    --s1-min: calc(var(--base-font-size-min) / var(--pl));
+    --s1-max: calc(var(--base-font-size-max) / var(--pu));
+
+    --h6-min: var(--base-font-size-min);
+    --h6-max: var(--base-font-size-max);
+
+    --h5-min: calc(var(--base-font-size-min) * var(--pl));
+    --h5-max: calc(var(--base-font-size-max) * var(--pu));
+
+    --h4-min: calc(var(--h5-min) * var(--pl));
+    --h4-max: calc(var(--h5-max) * var(--pu));
+
+    --h3-min: calc(var(--h4-min) * var(--pl));
+    --h3-max: calc(var(--h4-max) * var(--pu));
+
+    --h2-min: calc(var(--h3-min) * var(--pl));
+    --h2-max: calc(var(--h3-max) * var(--pu));
+
+    --h1-min: calc(var(--h2-min) * var(--pl));
+    --h1-max: calc(var(--h2-max) * var(--pu));
+  }
+
+  h1,
+  h2 {
+    --line-height-min: 1.25;
+    --line-height-max: 1;
+
+    font-size: var(--font-size);
+    font-weight: 200;
+    line-height: var(--line-height);
+    padding-block: calc(var(--grid-correction, 0) / 2);
+  }
+
+  h2 {
+    --font-size-min: var(--h2-min);
+    --font-size-max: var(--h2-max);
+  }
+}
+
+@layer base {
+  :root {
+    -webkit-text-size-adjust: 100%;
+
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+  }
+
+  *,
+  ::before,
+  ::after {
+    background-repeat: no-repeat;
+    box-sizing: inherit;
+  }
+
+  /* Prevent text-shadows making highlighted text unreadable */
+  ::-moz-selection {
+    background-color: highlight;
+    color: highlightText;
+    text-shadow: none !important;
+  }
+  ::selection {
+    background-color: highlight;
+    color: highlightText;
+    text-shadow: none !important;
+  }
+
+  html {
+    height: 100%;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: var(--color-background, white);
+    color: var(--color-text, black);
+    font-family: var(--font-family-default, sans-serif);
+    font-size: var(--font-size-default, 1em);
+    font-size-adjust: from-font;
+    line-height: var(--line-height-default, 1.5);
+    text-rendering: optimizeLegibility;
+    margin: 0;
+    min-height: 100%;
+  }
+
+  main {
+    outline: 0;
+  }
+
+  a {
+    color: var(--color-link, blue);
+    transition: 0.25s ease-in-out;
+
+    &:hover,
+    &:focus {
+      color: var(--color-link-hover, var(--color-link, blue));
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-family-heading, var(--font-family-default, 1rem));
+    line-height: var(--line-height-heading, 1.25);
+    font-weight: 400;
+    -webkit-margin-before: calc(var(--margin-heading-start, var(--spacing, 1.5rem) * 2));
+            margin-block-start: calc(var(--margin-heading-start, var(--spacing, 1.5rem) * 2));
+    -webkit-margin-after: var(--margin-heading-end, var(--spacing, 1.5rem));
+            margin-block-end: var(--margin-heading-end, var(--spacing, 1.5rem));
+  }
+
+  /* Limit width of objects with intrinsic size */
+  img,
+  picture,
+  object,
+  video,
+  embed,
+  iframe {
+    max-width: 100%;
+    height: auto;
+  }
+}
+@layer rhythm {
+  /*
+    Responsive typography with vertical rhythm
+  */
+  * {
+    /* Step 1: Establish individual responsive font-size */
+  
+    /* 
+      Min and max font sizes to screen sizes 
+      That is, font size will be 16px at 320px screen width and 20px at 1440px screen width
+      These values can be customized on each element to automatically update the formula
+    */
+    --font-size-min: 16;
+    --font-size-max: 20;
+    --font-size-min-viewport: 320;
+    --font-size-max-viewport: 1440;
+  
+    /* 
+      Converting from px to rem automatically for convenience and accessibility
+      If you want to set font-sizes in rem units from the start, you can set --font-size-units to 1rem
+      Default 1rem = 16px, so 1px = 0.0625rem 
+    */
+    --font-size-units: calc(0.0625rem);
+  
+    /* Math. Don't worry about it. And don't touch. */
+    --_font-size-step: calc( 
+      (var(--font-size-max) - var(--font-size-min)) / 
+      (var(--font-size-max-viewport) - var(--font-size-min-viewport))
+    );
+  
+    --_font-size-base-value: calc(
+      var(--font-size-min) - 
+      var(--font-size-min-viewport) * 
+      var(--_font-size-step)
+    );
+  
+    /* 
+      Create font-size custom prop on all elements
+       All elements can now use the --font-size prop
+  
+       What's more, we can tweak the values established above such as 
+       --font-size-min and --font-size-max, and the formula will update automatically
+       The same applies to the viewport units --font-size-min-viewport and --font-size-max-viewport
+       We can even set a custom --font-size prop on any element, and it will override the default 
+    */
+  
+    --font-size: clamp(
+      min(var(--font-size-min), var(--font-size-max)) * var(--font-size-units),
+      var(--_font-size-base-value) * var(--font-size-units) + var(--_font-size-step) * 100vw,
+      max(var(--font-size-max), var(--font-size-min)) * var(--font-size-units)
+    );
+  
+    /* Using ems to lock current line-height to current font-size */
+    --line-height-units: 1em;
+  
+    /* Min and max line-height */
+    --line-height-min: 1.2;
+    --line-height-max: 1.6;
+  
+    /* Same viewport boundaries as font-size, using font-size values to convert from pixels */
+    --line-height-min-viewport: calc(320 / var(--font-size-min));
+    --line-height-max-viewport: calc(1440 / var(--font-size-max));
+  
+    /* You know the drill. No touchy. */
+    --_line-height-step: calc(
+      (var(--line-height-max) - var(--line-height-min)) / 
+      (var(--line-height-max-viewport) - var(--line-height-min-viewport))
+    );
+  
+    --_line-height-base-value: calc(
+      var(--line-height-min) - 
+      var(--line-height-min-viewport) * 
+      var(--_line-height-step)
+    );
+  
+    /* 
+      Just like with --font-size, all elements will now have access to responsive line-height
+      And we can tweak the values established above such as --line-height-min and --line-height-max
+    */
+    --line-height: clamp(
+      min(var(--line-height-min), var(--line-height-max)) * var(--line-height-units),
+      var(--_line-height-base-value) * var(--line-height-units) + var(--_line-height-step) * 100vw,
+      max(var(--line-height-max), var(--line-height-min)) * var(--line-height-units)
+    );
+  }
+  
+  body {
+    /* We can now set font-size and line-height to their respective props */
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+  
+    /* 
+      These are our new rem-units and can be used whenever needed to refer to responsive body-font
+      NOTE: Please treat this as a CONST and do not edit or overwrite 
+    */
+    --RHYTHM_UNITS: var(--font-size);
+  
+    /* 
+      Create rhythm by locking to body line-height
+      This unit can now be used anywhere to refer back to the original body line-height
+      and thus establish a vertical rhythm
+      NOTE: Please treat this as a CONST and do not edit or overwrite
+    */
+    --RHYTHM: clamp(
+      min(var(--line-height-min), var(--line-height-max)) * var(--RHYTHM_UNITS),
+      var(--_line-height-base-value) * var(--RHYTHM_UNITS) + var(--_line-height-step) * 100vw,
+      max(var(--line-height-max), var(--line-height-min)) * var(--RHYTHM_UNITS)
+    );
+  
+    /* Here, a safe prop you can overwrite and play with as needed */
+    --spacing: var(--RHYTHM);
+
+    /* Let's save these just in case we need them */
+    --base-font-size-min: var(--font-size-min);
+    --base-font-size-max: var(--font-size-max);
+    --base-line-height-min: var(--line-height-min);
+    --base-line-height-max: var(--line-height-max);
+  }
+}
+/*
+ * Custom properties used
+ * Be sure to set these to customize the reset otherwise the defaults will be used
+ *
+ * --section-spacing-multiplier: 1, 2, 3, 4 (media queries)
+ * --section-spacing: calc(var(--spacing, 1.5rem) * var(--section-spacing-multiplier));
+ * --max-content-width: 100rem
+ *
+ */
+
+/*----------  Page elements  ----------*/
+
+@layer layout {
+  header,
+  main,
+  section,
+  article,
+  aside,
+  nav,
+  form,
+  div,
+  footer {
+    /* Creates section spacing variable for section-like elements */
+    --section-spacing-multiplier: 1;
+    --section-spacing: calc(var(--spacing, 1.5rem) * var(--section-spacing-multiplier));
+
+    @media (min-width: 40em) {
+      --section-spacing-multiplier: 2;
+    }
+
+    @media (min-width: 60em) {
+      --section-spacing-multiplier: 3;
+    }
+
+    @media (min-width: 80em) {
+      --section-spacing-multiplier: 4;
+    }
+
+    @media (min-width: 100em) {
+      --section-spacing-multiplier: 5;
+    }
+  }
+
+  header,
+  section,
+  footer {
+    /* Limit width of an element while maintaining padding and centering */
+    padding-inline: max(var(--section-spacing), calc(50% - var(--max-content-width, 100rem) / 2));
+  }
+
+  section {
+    padding-block: var(--section-spacing);
+  }
+}
+
+.site-header {
+  overflow: auto;
+  padding-block: calc(var(--spacing) / 2);
+  position: fixed;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: 10000;
+
+  @media (min-width: 64rem) {
+    display: flex;
+    inset-block-start: 0;
+    inset-block-end: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+}
+
+@supports(animation-timeline: view()) {
+  .site-header::after {    
+    background-image: linear-gradient(to right, transparent, black);
+    content: '';
+    display: block;
+    position: absolute;
+    top: calc(var(--spacing) / 2);
+    right: 0;
+    width: 33%;
+    height: calc(var(--spacing) * 1.5 + 2px);
+    pointer-events: none;
+  }
+}
+
+.fieldset-wrapper {
+  --height: calc(var(--spacing) * 2);
+
+  border-radius: calc(var(--height) / 2);
+  overflow: auto;
+
+  /* Prevent aliased border due to overflow clipping with border-radius */
+  padding-inline: 1px;
+}
+
+fieldset {
+  --font-size-min: 14;
+  --font-size-max: 16;
+
+  background-color: hsla(0deg, 0%, 0%, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  border: 1px solid var(--color-ui);
+  border-radius: inherit;
+  display: flex;
+  font-size: var(--font-size);
+  margin: 0 auto;
+  padding: 0;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+
+  @media (min-width: 64rem) {
+    margin: 0;
+  }
+}
+
+label {
+  --transition: 0.01s;
+
+  border-radius: inherit;
+  overflow: hidden;
+  padding-inline: var(--spacing);
+  padding-block: calc(var(--spacing) / 4);
+  position: relative;
+  transition: var(--transition) linear;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    background-color: var(--color-ui);
+    border-radius: inherit;
+    display: block;
+    transform: translateX(100.5%);
+    transition: inherit;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+}
+
+:checked + label {
+  --transition: 0.25s;
+
+  color: var(--color-background);
+  overflow: visible;
+
+  &::before {
+    transform: translateX(0);
+  }
+
+  & ~ label::before {
+    transform: translateX(-100.5%);
+  }
+}
+
+legend {
+  color: var(--color-secondary);
+}
+
+input {
+  accent-color: var(--color-primary);
+}
+
+/* Hides elements visually, leaves accessible to screenreaders */
+.sr-only {
+  border-width: 0;
+  clip: rect(0, 0, 0, 0);
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+  height: 1px;
+}
+
+@media (min-width: 64rem) {
+  h1.sr-only {
+    --font-size-min: 14;
+    --font-size-max: 16;
+
+    all: unset;
+    color: var(--color-text);
+    font-family: var(--font-family-default);
+    font-size: var(--font-size);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+}
+
+nav {
+  --indicator-number: 5;
+  --indicator-top: 50dvb;
+  --indicator-right: var(--spacing);
+
+  --indicator-size: 1em;
+  --indicator-padding: calc((var(--min-tap-size) - var(--indicator-size)) / 2);
+  --indicator-clipped-margins: var(--indicator-padding) * 2;
+  --indicator-total-size: calc(var(--indicator-size) + var(--indicator-padding) * 2);
+
+  --indicator-gap: var(--min-tap-space);
+  --indicator-total-gap: calc(var(--indicator-gap) * (var(--indicator-number) - 1));
+
+  --indicator-total-height: calc(var(--indicator-total-size) * var(--indicator-number) + var(--indicator-total-gap) - var(--indicator-clipped-margins));
+
+  /* Make indicators smaller when mouse is being used */
+  @media (pointer: fine) {
+    --indicator-padding: 0.25em;
+  }
+
+  position: fixed;
+  inset-block-start: var(--indicator-top);
+  inset-inline-end: var(--indicator-right);
+  -webkit-margin-before: calc(var(--indicator-total-height) / -2);
+          margin-block-start: calc(var(--indicator-total-height) / -2);
+  z-index: 100;
+
+  & ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--indicator-gap);
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    &::before {
+      --size: calc(var(--indicator-size));
+
+      border-radius: 50%;
+      content: '';
+      color: var(--color-indicator, var(--color-text));
+      background-color: currentColor;
+      box-shadow: inset 0 0 0 4px var(--color-background);
+      position: absolute;
+      inset-inline: 0;
+      margin-inline: auto;
+      padding: 3px;
+      width: var(--size);
+      height: var(--size);
+      z-index: -1;
+    }
+  }
+
+  & li:first-of-type {
+    -webkit-margin-before: calc(var(--indicator-padding) * -1);
+            margin-block-start: calc(var(--indicator-padding) * -1);
+  }
+
+  & li:last-of-type {
+    -webkit-margin-after: calc(var(--indicator-padding) * -1);
+            margin-block-end: calc(var(--indicator-padding) * -1);
+  }
+
+  & li,
+  & a {
+    display: block;
+  }
+
+  & a {
+    --color-link: var(--color-text);
+
+    padding: var(--indicator-padding);
+
+    &::before {
+      content: '';
+      border: 1px solid;
+      border-radius: 50%;
+      display: block;
+      width: var(--indicator-size);
+      height: var(--indicator-size);
+    }
+  }
+}
+
+@supports not (animation-timeline: scroll()) {
+  nav {
+    display: none;
+  }
+}
+
+footer {
+  --font-size-min: 14;
+  --font-size-max: 16;
+
+  color: var(--color-accent);
+  font-size: var(--font-size);
+  text-align: center;
+  position: relative;
+  z-index: 100;
+}
+
+.emoji {
+  background-color: var(--color-background);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-primary);
+    mix-blend-mode: hue;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-block: var(--spacing);
+  padding-inline: inherit;
+  position: relative;
+  height: 100%;
+
+  @media (min-width: 64rem) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  & strong,
+  & code {
+    color: var(--color-highlight);
+  }
+
+  & code {
+    font-family: var(--font-family-default);
+  }
+
+  & .selector {
+    --color-property: var(--color-highlight);
+
+    color: var(--color-selector);
+    font-weight: 700;
+  }
+
+  & .property {
+    --color-property: var(--color-highlight);
+
+    color: var(--color-property);
+    font-weight: 700;
+  }
+
+  & ul {
+    --font-size-min: 14;
+    --font-size-max: 16;
+
+    font-size: var(--font-size);
+    font-weight: 400;
+    list-style-position: inside;
+    margin: 0;
+    padding: 0;
+  }
+
+  & li {
+    margin-bottom: calc(var(--spacing) / 2);
+
+    &::marker {
+      content: '🌷 ';
+      color: var(--color-highlight);
+    }
+  }
+}
+
+h2,
+.text {
+  /* Making space for the scroll indicators */
+  -webkit-padding-end: calc(var(--min-tap-size) + var(--spacing));
+          padding-inline-end: calc(var(--min-tap-size) + var(--spacing));
+
+  @media (min-width: 64rem) {
+    -webkit-padding-end: 0;
+            padding-inline-end: 0;
+  }
+}
+
+@supports not (animation-timeline: scroll()) {
+  h2,
+  .text {
+    -webkit-padding-end: 0;
+            padding-inline-end: 0;
+  }
+}
+
+h2 {
+  line-height: 1;
+  margin-block: var(--spacing);
+  text-shadow: 1px 2px 0.1em hsla(0, 0%, 0%, 0.5);
+  width: 100%;
+
+  @media (min-width: 64rem) {
+    flex: 1;
+    -webkit-margin-after: 0;
+            margin-block-end: 0;
+  }
+}
+
+.text {
+  --intrinsic-width: 587;
+  --intrinsic-height: 930;
+  --height: 200px;
+  --offset: 200px;
+
+  & img {
+    display: block;
+    opacity: 0.2;
+    position: absolute;
+    inset: 0;
+    -o-object-fit: contain;
+       object-fit: contain;
+    -o-object-position: top center;
+       object-position: top center;
+    z-index: -1;
+  }
+
+  @media (min-width: 64rem) {
+    --height: min(100dvb, 33vw * var(--intrinsic-height) / var(--intrinsic-width));
+    --offset: calc(var(--height) / 3);
+
+    flex: 1;
+    font-weight: 200;
+    -webkit-padding-before: var(--spacing);
+            padding-block-start: var(--spacing);
+    position: relative;
+    z-index: -1;
+
+    & img {
+      float: inline-start;
+      height: var(--height);
+      margin-left: calc((1 - var(--intrinsic-width) / var(--intrinsic-height)) * -100%);
+      opacity: 0.65;
+      position: relative;
+      inset: auto;
+      shape-outside: var(--image);
+      shape-margin: var(--spacing);
+
+      & + * {
+        margin-top: calc(var(--spacing) * 3);
+      }
+    }
+  }
+
+  @media (min-width: 64rem) and (min-height: 45rem) {
+    & img + * {
+      margin-top: calc(var(--spacing) * 4);
+    }
+  }
+
+  @media (min-width: 90rem) and (min-height: 35rem) {
+    & img + * {
+      margin-top: var(--offset);
+    }
+  }
+}
+
+section:nth-child(1) {
+  --color-highlight: var(--color-primary);
+  --color-selector: var(--color-secondary);
+  --image: url('https://assets.codepen.io/197359/flower-white.png');
+}
+
+section:nth-child(2) {
+  --color-highlight: var(--color-yellow);
+  --color-selector: var(--color-green);
+  --image: url('https://assets.codepen.io/197359/flower-yellow.png');
+  --margin-top: 10dvi;
+}
+
+section:nth-child(3) {
+  --color-highlight: var(--color-secondary);
+  --color-selector: var(--color-primary);
+  --image: url('https://assets.codepen.io/197359/flower-blue.png');
+}
+
+section:nth-child(4) {
+  --color-highlight: var(--color-red);
+  --color-selector: var(--color-green-2);
+  --image: url('https://assets.codepen.io/197359/flower-red.png');
+}
+
+section:nth-child(5) {
+  --color-highlight: var(--color-purple);
+  --color-selector: var(--color-red-2);
+  --image: url('https://assets.codepen.io/197359/flower-purple.png');
+  --margin-top: 10dvi;
+}
+
 html {
 	/* Create a snapping rule on the html element */
 	scroll-snap-type: y mandatory;
